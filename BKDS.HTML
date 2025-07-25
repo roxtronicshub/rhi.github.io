@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Distributor Product Demand Form</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input[type="number"], input[type="text"] { width: 100%; padding: 8px; margin: 5px 0; }
+    button { padding: 10px 20px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Product Demand Form</h2>
+  <form id="demandForm">
+    <label>Distributor Name:</label>
+    <input type="text" name="distributor" required><br>
+
+    <h4>Enter Product Quantities:</h4>
+    <div id="products"></div>
+
+    <button type="submit">Submit</button>
+    <p id="responseMsg"></p>
+  </form>
+
+  <script>
+    const form = document.getElementById("demandForm");
+    const productsDiv = document.getElementById("products");
+
+    // Generate fields P1 to P38
+    for (let i = 1; i <= 38; i++) {
+      productsDiv.innerHTML += `<label>Product ${i}:</label><input type="number" name="P${i}" min="0"><br>`;
+    }
+
+    // Generate fields P1_1 to P8_1 (for 1.1 to 8.1)
+    for (let j = 1; j <= 8; j++) {
+      productsDiv.innerHTML += `<label>Product ${j}.1:</label><input type="number" name="P${j}_1" min="0"><br>`;
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const json = {};
+      formData.forEach((value, key) => { json[key] = value });
+
+      fetch("https://script.google.com/macros/s/AKfycbz5pBuL2f6oMqU3fqmEdoP3d5cRkY19OEuD3KhNuAa8KuMWEB_za7h4KasLLO_tRM15DA/exec", {
+        method: "POST",
+        body: JSON.stringify(json),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.text())
+      .then(msg => {
+        document.getElementById("responseMsg").textContent = msg;
+        form.reset();
+      })
+      .catch(err => {
+        document.getElementById("responseMsg").textContent = "Error: " + err;
+      });
+    });
+  </script>
+</body>
+</html>
